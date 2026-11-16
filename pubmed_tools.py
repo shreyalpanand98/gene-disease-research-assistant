@@ -1,5 +1,6 @@
 
 import requests
+from ncbi_utils import ncbi_get
 
 BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 
@@ -20,12 +21,7 @@ def search_pubmed(query: str, max_results: int = 5) -> list[str]:
         "sort": "relevance"
     }
 
-    response = requests.get(
-        url,
-        params=params,
-        timeout=20
-    )
-    response.raise_for_status()
+    response = ncbi_get(url, params)
 
     data = response.json()
 
@@ -46,12 +42,7 @@ def get_pubmed_details(pmids: list[str]) -> list[dict]:
         "retmode": "json"
     }
 
-    response = requests.get(
-        url,
-        params=params,
-        timeout=20
-    )
-    response.raise_for_status()
+    response = ncbi_get(url, params)
 
     data = response.json()
 
@@ -100,12 +91,7 @@ def get_pubmed_abstracts(pmids: list[str]) -> dict[str, str]:
         "retmode": "xml"
     }
 
-    response = requests.get(
-        url,
-        params=params,
-        timeout=20
-    )
-    response.raise_for_status()
+    response = ncbi_get(url, params)
 
     root = ET.fromstring(response.content)
     abstracts = {}

@@ -1,4 +1,5 @@
 import requests
+from ncbi_utils import ncbi_get
 
 gene_database = {
     "PKD1": {
