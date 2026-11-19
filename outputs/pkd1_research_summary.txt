@@ -1,0 +1,19 @@
+Research summary
+This brief report summarizes published cohort-based genetic studies addressing how PKD1 mutations relate to autosomal dominant polycystic kidney disease (ADPKD) genotype and renal outcome. The three studies combined large diagnostic and research sequencing efforts (Italian and multinational/Genkyst cohorts), reporting mutation detection rates, allelic spectra, and relationships between PKD1 vs PKD2 and between PKD1 mutation types (truncating vs nontruncating) and age at end-stage renal disease (ESRD).
+
+Three key findings (with exact statistics and sources)
+1) High diagnostic yield and PKD1 predominance in an Italian cohort: In 440 unrelated Italian ADPKD patients (plus 203 relatives; total 643 individuals evaluated), the overall mutation detection rate in PKD1/PKD2 testing was 80% (352/440). Among patients with pathogenic variants, 301/352 (85.5%) had disease associated with PKD1 and 51/352 (14.5%) with PKD2. Within PKD1-associated cases, 196/352 (55.7%) carried truncating mutations, 81/352 (23.0%) carried nontruncating mutations, and 24/352 (6.8%) carried in-frame indels (PMID: 27499327). PubMed: https://pubmed.ncbi.nlm.nih.gov/27499327/
+
+2) PKD1 versus PKD2: large Genkyst cohort showed markedly different renal survival by gene: In 741 ADPKD patients from 519 pedigrees, median age at ESRD was 58 years for PKD1 carriers versus 79 years for PKD2 carriers (a ~21-year difference) (PMID: 23431072). PubMed: https://pubmed.ncbi.nlm.nih.gov/23431072/
+
+3) Allelic effect within PKD1: mutation type influences renal outcome: In the same Genkyst cohort, the median age at ESRD differed by PKD1 mutation type—55 years for carriers of truncating PKD1 mutations versus 67 years for carriers of nontruncating PKD1 mutations (PMID: 23431072). PubMed: https://pubmed.ncbi.nlm.nih.gov/23431072/
+Additional relevant dataset: a comprehensive screen of up to 700 unrelated ADPKD patients identified 351 novel pathogenic mutations and expanded known pathogenic mutation spectra by 41.8% for PKD1 and 23.8% for PKD2, underscoring extensive allelic heterogeneity (PMID: 22508176). PubMed: https://pubmed.ncbi.nlm.nih.gov/22508176/
+
+Two important limitations
+- Cohort- and methodology-specificity: Findings derive from particular cohorts (an Italian series of 440 unrelated patients plus relatives; the Genkyst cohort of 741 patients from 519 pedigrees; and a separate screen of up to 700 unrelated patients) and from differing sequencing/analysis pipelines; therefore reported detection rates, mutation frequencies, and survival medians reflect those specific populations and methods (PMIDs: 27499327, 23431072, 22508176).
+- Variant classification uncertainty and technical complexity: Authors report high allelic heterogeneity, many novel variants of uncertain significance, difficulties in classifying novel variants, and technical challenges (e.g., PKD1 exons 1–33 homology) that limit definitive assignment of pathogenicity in some cases (PMIDs: 27499327, 22508176).
+
+References (PubMed links)
+- Carrera P et al., Scientific Reports 2016. PMID: 27499327. https://pubmed.ncbi.nlm.nih.gov/27499327/
+- Cornec‑Le Gall E et al., J Am Soc Nephrol 2013. PMID: 23431072. https://pubmed.ncbi.nlm.nih.gov/23431072/
+- Audrézet MP et al., Hum Mutat 2012. PMID: 22508176. https://pubmed.ncbi.nlm.nih.gov/22508176/
