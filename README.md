@@ -113,6 +113,8 @@ python web_server.py
 
 Open **http://127.0.0.1:8000**. Use `python web_server.py --port 8080` to select a different port.
 
+For a password-protected web link, see the [Render deployment guide](docs/deployment.md).
+
 The custom frontend is plain HTML, CSS, and JavaScript; there is no Node installation or frontend build step. The local HTTP server uses Python's standard library and loads the existing OpenAI/MCP research pipeline on the first question. The first request can take longer while these dependencies initialize.
 
 Helix includes:
@@ -128,7 +130,7 @@ Helix includes:
 
 Conversations and their evidence are stored **in server memory**, scoped to the browser using an HttpOnly cookie. They are not saved across server restarts. Idle sessions may be removed after 24 hours; export important results. Up to 20 conversations per browser and 50 questions per conversation are supported. Research memory retains five successful turns. Follow-up planning uses the last three questions and their gene and disease context. Ask to simplify an answer to reuse the previous answer and sources. An explicit request for simpler or more technical explanations sets the style after a successful response for the rest of that conversation. Withheld drafts are excluded from API answers and exports, and failed/withheld turns do not update research memory.
 
-Helix runs on the local machine. The Python backend holds the OpenAI API key. It sends questions to OpenAI for planning and sends relevant search terms to NCBI Gene, PubMed, or an NIH reference service as needed. See [frontend architecture](docs/frontend.md) for the API contract and testing instructions.
+The Python backend holds the OpenAI API key. It sends questions to OpenAI for planning and sends relevant search terms to NCBI Gene, PubMed, or an NIH reference service as needed. See [frontend architecture](docs/frontend.md) for the API contract and testing instructions.
 
 The application requires an active internet connection and a valid OpenAI API key.
 

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: helix-capstone-demo
+    runtime: python
+    plan: free
+    buildCommand: python -m pip install -r requirements.txt
+    startCommand: python -B web_server.py
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.9"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: HELIX_DEMO_PASSWORD
+        sync: false

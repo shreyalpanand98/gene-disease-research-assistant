@@ -1,4 +1,5 @@
 """Offline API contract and safety tests: python -m unittest discover -s tests -p test_web_server.py."""
+import base64
 import http.client
 import json
 import threading
@@ -149,6 +150,59 @@ class HTTPTests(unittest.TestCase):
     def test_bad_payload_and_unknown_routes(self):
         self.assertEqual(self.request("POST", "/api/sessions", ["not an object"])[0], 400)
         self.assertEqual(self.request("GET", "/api/unknown")[0], 404)
+
+
+class HostedHTTPTests(unittest.TestCase):
+    def test_public_server_requires_https_origin_and_password(self):
+        for kwargs in ({}, {"public_url": "http://demo.example", "demo_password": "test-password-long"},
+                       {"public_url": "https://demo.example", "demo_password": "short"}):
+            with self.assertRaises(ValueError):
+                ResearchServer(("0.0.0.0", 0), **kwargs)
+
+    def test_password_protects_frontend_and_api(self):
+        password = "test-password-long"
+        host = "demo.example"
+        server = ResearchServer(
+            ("127.0.0.1", 0), ResearchStore(allowed_runner),
+            public_url=f"https://{host}", demo_password=password,
+        )
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        self.addCleanup(thread.join)
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+
+        def request(method, path, **headers):
+            with_host = {"Host": host, **headers}
+            connection = http.client.HTTPConnection("127.0.0.1", server.server_port, timeout=3)
+            try:
+                connection.request(method, path, b"{}" if method == "POST" else None, with_host)
+                response = connection.getresponse()
+                return response.status, dict(response.getheaders()), response.read()
+            finally:
+                connection.close()
+
+        self.assertEqual(request("GET", "/healthz")[0], 200)
+        for method, path in (("GET", "/"), ("GET", "/api/health"), ("POST", "/api/sessions")):
+            status, headers, _ = request(method, path)
+            self.assertEqual(status, 401)
+            self.assertIn("Basic", headers["WWW-Authenticate"])
+        self.assertEqual(request("GET", "/", Authorization="Basic wrong")[0], 401)
+
+        token = base64.b64encode(f"helix:{password}".encode()).decode()
+        auth = {"Authorization": f"Basic {token}"}
+        self.assertEqual(request("GET", "/", **auth)[0], 200)
+        self.assertEqual(request("GET", "/", **auth, Host="foreign.example")[0], 403)
+        self.assertEqual(request("POST", "/api/sessions", **auth, Origin="https://foreign.example")[0], 403)
+        self.assertEqual(request("POST", "/api/sessions", **auth)[0], 415)
+
+        status, headers, body = request("POST", "/api/sessions", **auth, **{"Content-Type": "application/json"})
+        self.assertEqual(status, 201)
+        self.assertIn("; Secure", headers["Set-Cookie"])
+        session_id = json.loads(body)["id"]
+        research_path = f"/api/sessions/{session_id}/research"
+        cookie = headers["Set-Cookie"].split(";")[0]
+        self.assertEqual(request("POST", research_path, Cookie=cookie)[0], 401)
 
 
 if __name__ == "__main__":
