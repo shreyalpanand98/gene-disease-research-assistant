@@ -56,6 +56,7 @@ The application uses multiple specialized components:
 - **PubMed / NCBI E-utilities** — Biomedical publication retrieval
 - **Pydantic** — Structured response validation
 - **Git and GitHub** — Version control
+- **Streamlit** — Interactive chatbot interface and research dashboard
 
 ## 5. Getting Started
 
@@ -95,13 +96,36 @@ OPENAI_API_KEY=your_api_key_here
 
 Never commit `.env` or API credentials to GitHub.
 
-### Run the Backend
+
+### Run the Application
+
+Launch the Streamlit chatbot from the project root:
 
 ```bash
-python orchestrator.py
+streamlit run app.py
 ```
 
-Enter a research question in the terminal and review the generated response and validation results.
+The application opens in your browser and provides:
+
+- A chat interface for gene–disease research questions.
+- Multi-turn conversation memory for follow-up research.
+- NCBI Gene and PubMed evidence retrieval through MCP.
+- Research source links and evidence-review results.
+- Safety decisions that withhold answers when required checks fail.
+- A Clear Conversation button to reset the research session.
+
+The application requires an active internet connection and a valid OpenAI API key.
+
+### Run Automated Tests
+
+From the project root, run:
+
+```bash
+python -m pytest -q
+```
+
+The automated tests cover scientific claim verification, safety intervention, evidence validation, orchestration safety, and conversation memory.
+
 
 ## 6. Example Research Questions
 
@@ -132,59 +156,90 @@ The system implements several safety mechanisms:
 
 These mechanisms reduce certain risks but do not guarantee scientific correctness.
 
+
 ## 8. Evaluation Results
 
-Initial evaluation included 20 targeted checks across citation validation, evidence relevance, claim verification, intervention logic, and safety integration.
+The research assistant was evaluated using automated safety tests, controlled failure scenarios, and live research workflows.
 
-**Results:**
+### Automated Evaluation
 
-- 20 of 20 targeted safety checks passed.
-- Two live backend research workflows completed successfully.
-- The research workflow was validated using PKD1 and ADPKD questions.
-- Unsupported claims, invalid citations, and selected statistical inconsistencies were detected in controlled test cases.
+- 20 of 20 targeted safety checks passed during initial development.
+- 15 of 15 automated pytest tests passed after repository reorganization.
+- Tests cover citation validation, evidence relevance, scientific claim verification, safety intervention, orchestration, and conversation memory.
 
-These results describe performance on the tested scenarios, not overall biomedical accuracy.
+### Live Integration Testing
+
+- Successfully retrieved PKD1 gene information from NCBI Gene.
+- Successfully retrieved PubMed articles through the MCP server.
+- Validated the planning, retrieval, synthesis, evidence-review, and safety-decision workflow.
+
+### Frontend Testing
+
+- Verified multi-turn PKD1 and PKD2 research conversations.
+- Confirmed that Clear Conversation resets chat history and research memory.
+- Verified that backend failures produce a user-friendly error message.
+- Confirmed that withheld answers are not displayed or saved to conversation memory.
+
+These results demonstrate successful operation in the tested scenarios. They do not establish overall biomedical accuracy or guarantee that every generated claim is correct.
 
 For detailed results, see [Evaluation Documentation](docs/evaluation.md).
+
 
 ## 9. Project Structure
 
 ```text
 gene-disease-research-assistant/
-├── gene_tools.py
-├── pubmed_tools.py
-├── ncbi_utils.py
-├── mcp_server.py
-├── planner_agent.py
-├── orchestrator.py
-├── synthesis_agent.py
-├── evidence_review_agent.py
-├── safety_guardrails.py
-├── session_memory.py
-├── test_safety.py
-├── test_claim_verification.py
-├── test_intervention.py
-├── test_orchestrator_safety.py
-├── test_memory.py
+├── app.py
+├── agents/
+│   ├── __init__.py
+│   ├── orchestrator.py
+│   ├── planner_agent.py
+│   ├── synthesis_agent.py
+│   └── evidence_review_agent.py
+├── core/
+│   ├── __init__.py
+│   ├── session_memory.py
+│   └── safety_guardrails.py
+├── retrieval/
+│   ├── __init__.py
+│   ├── mcp_server.py
+│   ├── gene_tools.py
+│   ├── pubmed_tools.py
+│   └── ncbi_utils.py
+├── tests/
+│   ├── test_claim_verification.py
+│   ├── test_intervention.py
+│   ├── test_memory.py
+│   ├── test_orchestrator_safety.py
+│   └── test_safety.py
 ├── docs/
-│   └── evaluation.md
+│   ├── evaluation.md
+│   └── final_report_outline.md
 ├── outputs/
 │   └── pkd1_research_summary.txt
+├── mcp_client.py
 ├── requirements.txt
+├── .gitignore
 └── README.md
 ```
 
-Additional prototype and development files are also included in the repository.
+The project separates agent coordination, shared safety and memory functionality, biomedical retrieval, and automated testing into dedicated directories.
+
+The `app.py` file provides the Streamlit interface, while `mcp_client.py` supports independent MCP integration testing.
 
 ## 10. Limitations and Future Improvements
 
-- Expand evaluation to larger and more diverse biomedical question sets.
-- Test additional network failures, unavailable sources, and incomplete evidence.
-- Improve relevance ranking beyond keyword-based screening.
-- Benchmark scientific claim verification against human-reviewed examples.
-- Implement a dedicated human-review workflow.
-- Add a Streamlit-based chatbot interface.
-- Improve usability and reporting for evidence sources.
+Although the application includes evidence validation and safety checks, several limitations remain:
+
+- **Limited evaluation dataset:** Expand testing to a larger and more diverse collection of biomedical research questions.
+- **Scientific verification:** Benchmark generated claims against expert-reviewed biomedical evidence.
+- **Evidence relevance:** Improve retrieval ranking beyond keyword-based relevance screening.
+- **Source coverage:** Expand retrieval beyond NCBI Gene and PubMed to additional authoritative biomedical resources.
+- **Human review:** Implement a dedicated interface where researchers can review withheld answers and supporting evidence.
+- **Reliability:** Expand automated testing for network failures, incomplete evidence, and unavailable external services.
+- **Usability:** Improve research history navigation, evidence comparison, and exportable research summaries.
+
+The current system is intended as a research prototype, not a clinically validated decision-support tool.
 
 ## 11. Responsible Use
 
