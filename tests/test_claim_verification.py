@@ -1,6 +1,4 @@
-
-from evidence_review_agent import verify_scientific_claims
-
+from agents.evidence_review_agent import verify_scientific_claims
 
 def test_incorrect_sample_size():
 

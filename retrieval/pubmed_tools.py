@@ -1,6 +1,5 @@
 
-import requests
-from ncbi_utils import ncbi_get
+from retrieval.ncbi_utils import ncbi_get
 
 BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 

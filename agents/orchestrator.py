@@ -8,15 +8,14 @@ from pathlib import Path
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-from planner_agent import create_research_plan
-from synthesis_agent import synthesize_research
-from evidence_review_agent import (
+from agents.planner_agent import create_research_plan
+from agents.synthesis_agent import synthesize_research
+from agents.evidence_review_agent import (
     review_evidence,
     verify_scientific_claims
 )
-from safety_guardrails import decide_intervention
-from session_memory import ResearchMemory
-
+from core.safety_guardrails import decide_intervention
+from core.session_memory import ResearchMemory
 
 # ==================================================
 # 1. EXTRACT MCP TOOL RESULTS
@@ -108,12 +107,14 @@ async def run_research(
         return research_state
 
     server_path = (
-        Path(__file__).resolve().parent / "mcp_server.py"
+        Path(__file__).resolve().parent.parent
+        / "retrieval"
+        / "mcp_server.py"
     )
 
     server_params = StdioServerParameters(
         command=sys.executable,
-        args=[str(server_path)]
+        args=["-m", "retrieval.mcp_server"]
     )
 
     async with stdio_client(server_params) as (read, write):

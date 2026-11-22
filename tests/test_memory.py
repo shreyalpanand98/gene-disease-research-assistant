@@ -1,6 +1,5 @@
 
-from session_memory import ResearchMemory
-
+from core.session_memory import ResearchMemory
 
 def test_add_turn():
     memory = ResearchMemory(max_turns=3)

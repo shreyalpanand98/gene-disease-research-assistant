@@ -10,14 +10,14 @@ from mcp.client.stdio import stdio_client
 async def main():
 
     # Step 1: Find the MCP server
-    server_path = Path(__file__).resolve().parent / "mcp_server.py"
+    server_path = Path(__file__).resolve().parent / "retrieval" / "mcp_server.py"
 
     print("Server file exists:", server_path.exists(), flush=True)
 
     # Step 2: Configure the server
     server_params = StdioServerParameters(
         command=sys.executable,
-        args=[str(server_path)]
+        args=["-m", "retrieval.mcp_server"]
     )
 
     # Step 3: Connect to the MCP server

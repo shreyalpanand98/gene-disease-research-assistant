@@ -1,7 +1,6 @@
 
-from safety_guardrails import decide_intervention
-from session_memory import ResearchMemory
-
+from core.safety_guardrails import decide_intervention
+from core.session_memory import ResearchMemory
 
 def test_withheld_answer_not_saved():
     memory = ResearchMemory(max_turns=5)

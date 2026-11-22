@@ -2,9 +2,8 @@
 import streamlit as st
 import traceback
 
-from orchestrator import process_research_question
-from session_memory import ResearchMemory
-
+from agents.orchestrator import process_research_question
+from core.session_memory import ResearchMemory
 
 # --------------------------------------------------
 # Page configuration

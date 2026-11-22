@@ -1,5 +1,5 @@
 
-from evidence_review_agent import (
+from agents.evidence_review_agent import (
     review_evidence,
     screen_article_relevance
 )

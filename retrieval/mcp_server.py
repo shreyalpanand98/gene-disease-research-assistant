@@ -1,8 +1,7 @@
 
 from mcp.server.fastmcp import FastMCP
-from gene_tools import search_gene, search_ncbi_gene
-from pubmed_tools import research_pubmed
-import requests
+from retrieval.gene_tools import search_gene, search_ncbi_gene
+from retrieval.pubmed_tools import research_pubmed
 
 # Step 1: Create MCP server
 mcp = FastMCP("GeneDiseaseResearchAssistant")
