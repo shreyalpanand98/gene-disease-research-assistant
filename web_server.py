@@ -1,4 +1,4 @@
-"""Local custom frontend + JSON API. Run: python web_server.py.
+"""Helix frontend and JSON API. Run locally with python web_server.py.
 
 Uses the standard library; existing research dependencies are loaded on demand.
 Sessions are isolated by an HttpOnly browser cookie and live in server memory.
@@ -7,7 +7,9 @@ Sessions are isolated by an HttpOnly browser cookie and live in server memory.
 from __future__ import annotations
 
 import argparse
+import base64
 import copy
+from hashlib import sha256
 from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -162,8 +164,26 @@ class ResearchStore:
 class ResearchServer(ThreadingHTTPServer):
     daemon_threads = True
 
-    def __init__(self, address, store=None):
+    def __init__(self, address, store=None, *, public_url=None, demo_password=None):
         self.store = store or ResearchStore()
+        self.public_host = None
+        self.public_origin = None
+        self.demo_auth_digest = None
+        if public_url:
+            parsed = urlsplit(public_url)
+            if (
+                parsed.scheme != "https" or not parsed.hostname or parsed.username is not None
+                or parsed.path not in ("", "/") or parsed.query or parsed.fragment
+            ):
+                raise ValueError("The public Helix URL must be an HTTPS origin.")
+            if not demo_password or len(demo_password.strip()) < 16:
+                raise ValueError("Set HELIX_DEMO_PASSWORD to a password of at least 16 characters.")
+            self.public_host = parsed.netloc.lower()
+            self.public_origin = f"https://{self.public_host}"
+            token = base64.b64encode(f"helix:{demo_password}".encode("utf-8"))
+            self.demo_auth_digest = sha256(token).digest()
+        elif address[0] not in {"127.0.0.1", "localhost"}:
+            raise ValueError("A public listener requires an HTTPS origin and demo password.")
         super().__init__(address, Handler)
 
 
@@ -181,9 +201,12 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "no-referrer")
+        if status == 401:
+            self.send_header("WWW-Authenticate", 'Basic realm="Helix capstone demo", charset="UTF-8"')
         self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'")
         if getattr(self, "new_owner", None):
-            self.send_header("Set-Cookie", f"helix_browser={self.new_owner}; Path=/; HttpOnly; SameSite=Strict")
+            secure = "; Secure" if self.server.public_origin else ""
+            self.send_header("Set-Cookie", f"helix_browser={self.new_owner}; Path=/; HttpOnly; SameSite=Strict{secure}")
         self.end_headers()
         self.wfile.write(payload)
 
@@ -199,18 +222,35 @@ class Handler(BaseHTTPRequestHandler):
         self.new_owner = secrets.token_urlsafe(32)
         return self.new_owner
 
+    def _authenticated(self):
+        scheme, _, token = self.headers.get("Authorization", "").partition(" ")
+        return scheme.lower() == "basic" and secrets.compare_digest(
+            sha256(token.strip().encode("utf-8")).digest(), self.server.demo_auth_digest
+        )
+
     def _handle(self):
         try:
-            # Loopback-only service. Reject foreign Host headers and cross-origin writes.
-            host = self.headers.get("Host", "")
-            if host not in {f"127.0.0.1:{self.server.server_port}", f"localhost:{self.server.server_port}"}:
-                self._send(403, {"error": "Use the local application URL."})
+            host = self.headers.get("Host", "").lower()
+            hosted = bool(self.server.public_origin)
+            allowed_hosts = {self.server.public_host} if hosted else {
+                f"127.0.0.1:{self.server.server_port}", f"localhost:{self.server.server_port}"
+            }
+            if host not in allowed_hosts:
+                self._send(403, {"error": "Use the configured Helix URL."})
                 return
             origin = self.headers.get("Origin")
-            if origin and origin != f"http://{host}":
+            expected_origin = self.server.public_origin or f"http://{host}"
+            if origin and origin != expected_origin:
                 self._send(403, {"error": "Cross-origin requests are not allowed."})
                 return
             path = urlsplit(self.path).path
+            if hosted:
+                if path == "/healthz" and self.command == "GET":
+                    self._send(200, {"status": "ready"})
+                    return
+                if not self._authenticated():
+                    self._send(401, {"error": "Enter the demo username and password."})
+                    return
             if not path.startswith("/api/"):
                 if self.command != "GET":
                     self._send(405, {"error": "Method not allowed."})
@@ -227,6 +267,9 @@ class Handler(BaseHTTPRequestHandler):
             store = self.server.store
             body = {}
             if self.command == "POST":
+                if hosted and self.headers.get_content_type() != "application/json":
+                    self._send(415, {"error": "Send an application/json request."})
+                    return
                 length = int(self.headers.get("Content-Length", "0"))
                 if length < 0 or length > 20000:
                     self._send(413, {"error": "Request is too large."})
@@ -270,16 +313,34 @@ class Handler(BaseHTTPRequestHandler):
     do_DELETE = _handle
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description="Helix gene–disease research workspace")
-    parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--port", type=int, help="Override the default listening port")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO)
-    server = ResearchServer(("127.0.0.1", args.port))
-    print(f"Helix is running at http://127.0.0.1:{server.server_port}", flush=True)
+    public_url = os.environ.get("RENDER_EXTERNAL_URL")
+    if os.environ.get("RENDER") == "true" and not public_url:
+        parser.error("Render must provide RENDER_EXTERNAL_URL for the hosted demo.")
+    if public_url and not os.environ.get("OPENAI_API_KEY", "").strip():
+        parser.error("Set OPENAI_API_KEY in the hosting dashboard.")
+    try:
+        default_port = int(os.environ.get("PORT", "10000")) if public_url else 8000
+        port = args.port if args.port is not None else default_port
+        server = ResearchServer(
+            ("0.0.0.0" if public_url else "127.0.0.1", port),
+            public_url=public_url,
+            demo_password=os.environ.get("HELIX_DEMO_PASSWORD"),
+        )
+    except ValueError as error:
+        parser.error(str(error))
+    print(f"Helix is running at {server.public_origin or f'http://127.0.0.1:{server.server_port}'}", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         pass
     finally:
         server.server_close()
+
+
+if __name__ == "__main__":
+    main()

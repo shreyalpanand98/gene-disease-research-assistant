@@ -14,7 +14,7 @@ The server lazy-loads the research pipeline inside a worker. A slow dependency i
 
 ## API
 
-All responses are JSON except frontend assets. Successful session requests create or reuse an HttpOnly `SameSite=Strict` cookie. Session identifiers from another browser are not accessible. The service accepts only its loopback Host and rejects cross-origin requests; it does not expose CORS access.
+All responses are JSON except frontend assets. Successful session requests create or reuse an HttpOnly `SameSite=Strict` cookie. The service checks the configured host and rejects cross-origin requests. Local mode listens on loopback. In [hosted demo mode](deployment.md), the app and research API require a password and the session cookie is HTTPS-only.
 
 | Method | Path | Result |
 |---|---|---|
@@ -43,7 +43,7 @@ Markdown export includes questions, approved summaries (or withheld/error notice
 
 ## Limits
 
-Sessions are in memory, not durable storage. Idle sessions older than 24 hours are pruned when a new session is created. The server caps total sessions at 100 and each browser at 20. Each conversation supports 50 questions. There is no login, remote hosting, human-review queue, cancellation of in-flight LLM requests, or persistent database. These would require separate backend work.
+Sessions live in memory. Helix prunes idle sessions older than 24 hours when it creates a new session. The server caps total sessions at 100 and each browser at 20. Each conversation supports 50 questions. Hosted demo access uses a shared password. User accounts, a human-review queue, cancellation of in-flight LLM requests, and durable storage would require separate backend work.
 
 Retrieval still uses up to three PubMed articles, and claim review is conditional. The UI does not imply full-text access, comprehensive literature coverage, or a numerical confidence score that the backend does not provide. This application is designed for research and education, not clinical use.
 
