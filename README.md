@@ -113,7 +113,7 @@ python web_server.py
 
 Open **http://127.0.0.1:8000**. Use `python web_server.py --port 8080` to select a different port.
 
-For a password-protected web link, see the [Render deployment guide](docs/deployment.md).
+To create a password-protected web link, [deploy the demo on Render](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2Fshreyalpanand98%2Fgene-disease-research-assistant%2Ftree%2Fcodex%2Fhosted-demo) and follow the [deployment guide](docs/deployment.md).
 
 The custom frontend is plain HTML, CSS, and JavaScript; there is no Node installation or frontend build step. The local HTTP server uses Python's standard library and loads the existing OpenAI/MCP research pipeline on the first question. The first request can take longer while these dependencies initialize.
 
