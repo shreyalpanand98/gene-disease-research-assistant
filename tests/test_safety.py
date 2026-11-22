@@ -1,8 +1,10 @@
 
 from agents.evidence_review_agent import (
+    check_statistical_claims,
     review_evidence,
     screen_article_relevance
 )
+from core.safety_guardrails import decide_intervention
 
 def test_article_relevance():
     question = (
@@ -132,6 +134,33 @@ def test_missing_gene_evidence():
     assert result["requires_human_review"] is True
 
     print("PASS: Missing gene evidence was flagged.")
+
+def test_gene_comparison_requires_each_requested_record():
+    state = {
+        "question": "Compare PKD1 and PKD2",
+        "plan": {"genes": ["PKD1", "PKD2"], "use_gene_tool": True},
+        "gene_evidence": [{"status": "found", "symbol": "pkd1"}, {"status": "not_found"}],
+    }
+    review = review_evidence(state, "Comparative answer.")
+    assert review["missing_gene_symbols"] == ["PKD2"]
+    decision = decide_intervention(review)
+    assert decision["action"] == "withhold"
+    assert "PKD2" in decision["reason"]
+
+    state["gene_evidence"][1] = {"status": "found", "symbol": "PKD2"}
+    review = review_evidence(state, "Comparative answer.")
+    assert review["missing_gene_symbols"] == []
+    assert review["status"] == "passed"
+
+
+def test_significance_check_preserves_negation_and_p_value_direction():
+    assert check_statistical_claims("The result was not statistically significant (p = 0.12).") == []
+    assert check_statistical_claims("No statistically significant change was observed (p = 0.12).") == []
+    assert check_statistical_claims("The result was not **statistically significant** (p = 0.12).") == []
+    assert check_statistical_claims("The result was statistically significant (p < 0.05).") == []
+    mixed = "The first result was not statistically significant (p = 0.12), but the second was statistically significant (p = 0.08)."
+    assert [issue["p_value"] for issue in check_statistical_claims(mixed)] == [0.08]
+
 
 def test_pubmed_api_failure():
     """Check behavior when the PubMed MCP tool fails."""
@@ -281,6 +310,8 @@ def test_unsupported_scientific_claim():
 if __name__ == "__main__":
     test_missing_pubmed_evidence()
     test_missing_gene_evidence()
+    test_gene_comparison_requires_each_requested_record()
+    test_significance_check_preserves_negation_and_p_value_direction()
     test_pubmed_api_failure()
     test_ncbi_api_failure()
     test_article_relevance()

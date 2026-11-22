@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101f2b">
+  <meta name="description" content="An evidence-first workspace for exploring genes, diseases, and the science that connects them.">
+  <title>Helix — Gene–Disease Research</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#question">Skip to research question</a>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Research navigation">
+      <a class="brand" href="/" aria-label="Helix home"><span class="brand-symbol" aria-hidden="true">✳</span><span>helix<span class="brand-caption">GENE–DISEASE RESEARCH</span></span></a>
+      <button class="new-button" id="new-session"><span aria-hidden="true">＋</span> New research <kbd>N</kbd></button>
+      <div class="nav-section-label">WORKSPACE</div>
+      <button class="nav-item active" id="workspace-button"><span data-icon="chat"></span> Research assistant <span class="nav-dot"></span></button>
+      <button class="nav-item" id="about-button"><span data-icon="layers"></span> How Helix works</button>
+      <div class="history-heading"><span class="nav-section-label">CONVERSATIONS</span><span id="session-count">0</span></div>
+      <label class="history-search"><span data-icon="search"></span><input id="history-search" placeholder="Find a conversation" aria-label="Search conversations"></label>
+      <nav id="session-list" class="session-list" aria-label="Conversations"></nav>
+      <div class="sidebar-bottom">
+        <div class="source-label">CONNECTED KNOWLEDGE</div>
+        <div class="knowledge-row"><span class="source-logo">N</span><span>NCBI Gene<small>Human gene records</small></span><span data-icon="external"></span></div>
+        <div class="knowledge-row"><span class="source-logo pubmed">P</span><span>PubMed<small>Scientific literature</small></span><span data-icon="external"></span></div>
+        <div class="local-note"><span data-icon="lock"></span><span>Local research workspace<small>Conversations last while the server runs.</small></span></div>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div class="breadcrumb"><button class="icon-button mobile-menu" id="menu-button" aria-label="Toggle navigation" aria-expanded="false"><span data-icon="menu"></span></button><span>Workspace</span><span class="breadcrumb-slash">/</span><strong>Research assistant</strong></div>
+        <div class="topbar-actions"><span class="connection" id="connection"><span class="connection-dot"></span>Connecting</span><button class="icon-button" id="help-button" aria-label="About this research workspace"><span data-icon="help"></span></button><span class="profile" title="Local research workspace">R</span></div>
+      </header>
+
+      <div class="workspace-body" id="workspace-body">
+        <main class="main-panel" id="main-panel">
+          <div class="page-heading"><div><span class="eyebrow">THE RESEARCH WORKSPACE</span><h1 id="page-title">A little curiosity. A lot of evidence.</h1><p id="page-description">Explore the connections between genes, disease, and discovery.</p></div><button class="subtle-button" id="export-session" hidden><span data-icon="download"></span> Export</button></div>
+
+          <section class="welcome" id="welcome" aria-label="Start your research">
+            <div class="hero-card">
+              <div class="hero-copy"><span class="hero-label"><span class="tiny-spark">✳</span> BUILT FOR SCIENTIFIC CURIOSITY</span><h2>Follow the question.<br><em>Find the evidence.</em></h2><p>From a gene’s function to the studies behind a disease association. Ask a question, explore the sources, and see how the findings hold up.</p><div class="hero-tags"><span><span data-icon="book"></span> Source-grounded</span><span><span data-icon="shield"></span> Evidence-reviewed</span></div></div>
+              <div class="helix-art" aria-hidden="true"><svg viewBox="0 0 250 340" fill="none"><defs><linearGradient id="strand" x1="30" y1="0" x2="220" y2="340" gradientUnits="userSpaceOnUse"><stop stop-color="#6cf5ca"/><stop offset="1" stop-color="#38a5aa"/></linearGradient></defs><g stroke="#6be1c3" stroke-opacity=".30" stroke-width="2"><path d="M65 25L185 25M86 49L164 49M112 73L138 73M110 97L140 97M84 121L166 121M65 145L185 145M60 169L190 169M76 193L174 193M102 217L148 217M117 241L133 241M94 265L156 265M71 289L179 289M60 313L190 313"/></g><path d="M61 0C61 68 189 68 189 153S61 238 61 340" stroke="url(#strand)" stroke-width="4"/><path d="M189 0C189 68 61 68 61 153S189 238 189 340" stroke="url(#strand)" stroke-width="4"/><g fill="#a4ffe2"><circle cx="65" cy="25" r="5"/><circle cx="185" cy="25" r="5"/><circle cx="84" cy="121" r="5"/><circle cx="166" cy="121" r="5"/><circle cx="76" cy="193" r="5"/><circle cx="174" cy="193" r="5"/><circle cx="71" cy="289" r="5"/><circle cx="179" cy="289" r="5"/></g></svg><span class="orbit-label label-one">PKD1</span><span class="orbit-label label-two">Evidence, connected.</span><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div></div>
+            </div>
+            <div class="section-heading"><h3>A starting point for your next discovery</h3><span>Try a research question</span></div>
+            <div class="prompt-grid">
+              <button class="prompt-card" data-prompt="What is the PKD1 gene and what does it do?"><span class="prompt-icon" data-icon="dna"></span><span class="prompt-kind">GENE EXPLORER</span><strong>Start with a gene</strong><span>What is PKD1, and what does it do?</span><span class="prompt-footer">NCBI Gene <span data-icon="plus"></span></span></button>
+              <button class="prompt-card" data-prompt="What differences have been reported between PKD1 and PKD2 in ADPKD progression?"><span class="prompt-icon blue" data-icon="compare"></span><span class="prompt-kind">CONNECT THE DOTS</span><strong>Compare the evidence</strong><span>How do PKD1 and PKD2 differ in ADPKD progression?</span><span class="prompt-footer">Gene + literature research <span data-icon="plus"></span></span></button>
+              <button class="prompt-card" data-prompt="What scientific evidence links PKD1 variants to ADPKD progression?"><span class="prompt-icon violet" data-icon="book"></span><span class="prompt-kind">LITERATURE DEEP DIVE</span><strong>Go beyond the overview</strong><span>What links PKD1 variants to disease progression?</span><span class="prompt-footer">PubMed evidence <span data-icon="plus"></span></span></button>
+            </div>
+            <div class="workflow-strip"><span class="workflow-label">FROM QUESTION TO CONTEXT</span><span><b>Understand</b> your question</span><i></i><span><b>Retrieve</b> the evidence</span><i></i><span><b>Review</b> the findings</span></div>
+          </section>
+
+          <section class="conversation" id="conversation" aria-label="Research conversation" hidden></section>
+
+          <div class="composer-area"><div class="context-line" id="context-line"><span data-icon="spark"></span><span>Your next discovery starts with a good question.</span></div><form class="composer" id="question-form"><label class="sr-only" for="question">Research question</label><textarea id="question" rows="2" maxlength="4000" placeholder="Ask about a gene, a disease, or the science connecting them…"></textarea><div class="composer-footer"><div><span class="composer-source"><span class="small-dot"></span> NCBI Gene + PubMed</span><span class="composer-hint">Enter to research · Shift + Enter for a new line</span></div><button class="submit-button" id="submit-question" type="submit"><span>Research</span><span data-icon="spark"></span></button></div></form><p class="research-notice"><span data-icon="shield"></span> For research and education. Automated reviews can miss errors. Not for diagnosis or treatment.</p></div>
+        </main>
+
+        <aside class="evidence-panel" id="evidence-panel" aria-label="Research evidence" hidden>
+          <div class="inspector-heading"><div><span class="eyebrow">BEHIND THE ANSWER</span><h2>Evidence explorer</h2></div><button class="icon-button" id="close-evidence" aria-label="Close evidence explorer"><span data-icon="close"></span></button></div>
+          <div id="evidence-summary"></div>
+          <div class="inspector-tabs" role="tablist" aria-label="Evidence views"><button role="tab" id="tab-sources" data-tab="sources" aria-selected="true" aria-controls="evidence-content">Sources</button><button role="tab" id="tab-review" data-tab="review" aria-selected="false" aria-controls="evidence-content" tabindex="-1">Review</button><button role="tab" id="tab-plan" data-tab="plan" aria-selected="false" aria-controls="evidence-content" tabindex="-1">Plan</button></div>
+          <div id="evidence-content" role="tabpanel" aria-labelledby="tab-sources"></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <dialog id="about-dialog"><div class="dialog-heading"><span class="brand-symbol">✳</span><button class="icon-button" id="close-about" aria-label="Close information"><span data-icon="close"></span></button></div><span class="eyebrow">MEET YOUR RESEARCH WORKSPACE</span><h2>Good questions deserve<br>traceable answers.</h2><p>Helix brings the Gene–Disease Research Assistant into one workspace. Its initial research focus is PKD1, PKD2, and ADPKD, with live human gene lookups and PubMed searches for other questions.</p><ol class="about-steps"><li><strong>Plan & retrieve</strong><span>A planner interprets your question, looks up gene records, and retrieves up to three PubMed articles.</span></li><li><strong>Synthesize & review</strong><span>The assistant summarizes the evidence, checks citations and relevance, and assesses scientific claims when required.</span></li><li><strong>Explore the evidence</strong><span>Read the sources, inspect individual claim assessments, and export permitted summaries and references.</span></li></ol><div class="about-note"><strong>A research companion, with limits.</strong><p>Passing automated checks does not establish scientific correctness. Withheld answers stay hidden; there is no human-review queue. Ask for a simpler explanation to revisit the previous answer and its sources.</p><p>Conversations stay in this server’s memory, expire after 24 hours of inactivity, and disappear when it restarts. Export anything you want to keep. Do not enter private patient information.</p></div></dialog>
+  <dialog id="delete-dialog"><h2>Delete this conversation?</h2><p>This removes its questions, results, and research memory. Export it first if you want to keep a copy.</p><div class="dialog-actions"><button class="subtle-button" id="cancel-delete">Keep conversation</button><button class="danger-button" id="confirm-delete">Delete conversation</button></div></dialog>
+</body>
+</html>

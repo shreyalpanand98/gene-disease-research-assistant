@@ -1,5 +1,6 @@
 
 import json
+from typing import Literal
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -15,6 +16,10 @@ client = OpenAI(timeout=60.0, max_retries=1)
 # --------------------------------------------------
 
 class ResearchPlan(BaseModel):
+    intent: Literal["research", "rephrase", "definition"] = "research"
+    explanation_style: Literal["unchanged", "beginner", "technical"] = "unchanged"
+    definition_term: str = ""
+
     genes: list[str] = Field(
         description=(
             "List of official gene symbols relevant to the "
@@ -114,6 +119,32 @@ def create_research_plan(
                     "Your job is to analyze research questions "
                     "and produce structured research plans. "
                     "You do not answer the research question. "
+
+                    "Set intent to rephrase when the user only asks for a different "
+                    "explanation of the latest answer, including requests like 'I am new "
+                    "to biology and do not understand the terms. Can you explain more simply?' "
+                    "or 'Explain this disease to someone who has never heard of it.' "
+                    "For rephrase, set both tool flags false. Use research for any new factual "
+                    "question, comparison, or request for additional evidence, even if the "
+                    "user also asks for simpler language. If there is no prior context, "
+                    "treat named topics as research questions. "
+                    "Set explanation_style to beginner for plain language, unfamiliarity "
+                    "with biology, or a request for a simpler explanation. Set it to technical "
+                    "for an explicit request for a technical or expert explanation. "
+                    "Otherwise use unchanged. Classify style from the current request only. "
+
+                    "Use definition for a standalone request to define a biomedical term, "
+                    "abbreviation, or condition, including a term from an earlier answer. "
+                    "Treat a bare named condition or biomedical term as a definition request. "
+                    "Put only the term in definition_term, with no question or personal details. "
+                    "Use an empty definition_term if the term is unclear or there are several "
+                    "plausible biomedical meanings and context does not resolve them. "
+                    "For example, 'What does MS stand for?' without context needs clarification. "
+                    "Never assume the most common expansion of an ambiguous abbreviation. "
+                    "Keep definition_term empty on other intents. Official gene symbols and "
+                    "questions about what a specific gene does stay on the gene research path. "
+                    "Questions about new findings, evidence, comparisons, treatment or personal "
+                    "health do not become definition lookups. For definition, set both tool flags false. "
 
                     "Extract relevant gene symbols and diseases. "
                     "Never invent gene symbols or scientific facts. "

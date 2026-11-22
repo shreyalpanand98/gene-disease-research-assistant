@@ -12,7 +12,7 @@ The system was evaluated using synthetic test cases, controlled safety scenarios
 
 Tests covered citation validation, evidence relevance, scientific claim verification, safety interventions, conversation memory, and integration between the orchestrator and safety components.
 
-## Test Results
+## Original Prototype Results
 
 | Evaluation Area | Result |
 |---|---|
@@ -36,7 +36,16 @@ The assistant correctly planned a gene-focused workflow, retrieved PKD1 informat
 
 The assistant selected both NCBI Gene and PubMed retrieval. Its synthesis cited retrieved PubMed articles, including PMIDs 27499327, 37509056, and 40126492. Citation review passed, and all six claims identified by the scientific claim reviewer were classified as supported.
 
-Both live scenarios received an allow decision from the safety intervention component.
+Both live scenarios received an allow decision from the safety intervention component during the original prototype evaluation.
+
+## Helix Web App Validation
+
+- The latest offline run passed 30 Python tests. These cover the HTTP API, browser session isolation, progress reporting, answer withholding, and the new lookup and review behaviors. The frontend checks cover citation links, Markdown rendering, and exports.
+- Regression checks confirm that gene comparisons need each required gene record and that a correctly stated nonsignificant result does not trigger the narrow p-value check.
+- A live PKD1 follow-up reused the previous answer’s sources, returned a shorter explanation, and passed the applicable evidence checks.
+- Live definition tests verified a cited answer for “penetrance,” a request to clarify “MS,” and guidance when no reference matched.
+
+These checks exercise specific behaviors. The live claim-verification tests use synthetic evidence and call OpenAI. The [README](../README.md#run-automated-tests) lists the offline and live test commands separately.
 
 ## Safety Behavior
 

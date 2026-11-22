@@ -28,4 +28,4 @@ data/private/
 
 # Local debugging files
 import_times.txt
-*.tmpnumpy_import_times.txt
+numpy_import_times.txt

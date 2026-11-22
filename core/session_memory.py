@@ -5,8 +5,9 @@ class ResearchMemory:
     def __init__(self, max_turns=5):
         self.max_turns = max_turns
         self.history = []
+        self.explanation_style = "standard"
 
-    def add_turn(self, question, plan, answer):
+    def add_turn(self, question, plan, answer, *, evidence=None):
         """Save a completed research interaction."""
 
         turn = {
@@ -14,6 +15,8 @@ class ResearchMemory:
             "plan": plan,
             "answer": answer
         }
+        if evidence is not None:
+            turn["evidence"] = evidence
 
         self.history.append(turn)
 
@@ -27,3 +30,4 @@ class ResearchMemory:
     def clear(self):
         """Clear the current research session."""
         self.history = []
+        self.explanation_style = "standard"

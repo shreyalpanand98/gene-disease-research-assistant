@@ -12,6 +12,12 @@ def decide_intervention(
     """
 
     if citation_review.get("requires_human_review", True):
+        missing_genes = citation_review.get("missing_gene_symbols") or []
+        if missing_genes and citation_review.get("status") == "needs_review":
+            return {
+                "action": "withhold",
+                "reason": "Required NCBI Gene records were missing for " + ", ".join(missing_genes) + ".",
+            }
         return {
             "action": "withhold",
             "reason": "Citation or evidence review did not pass."

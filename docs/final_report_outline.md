@@ -14,12 +14,15 @@
 - Explain the coordination strategy.
 - Describe the ReAct-inspired planning, tool-use, and observation workflow.
 - Explain short-term session memory.
+- Explain how the planner distinguishes new research, a standalone definition, and a request to rewrite the previous answer.
 
 ## 3. Implementation and Tool Integration (200 words)
 
 - Describe the Python-based implementation.
 - Explain how the MCP server exposes biomedical retrieval tools.
 - Discuss NCBI Gene and PubMed integration.
+- Describe the Helix frontend, local HTTP API, and Evidence Explorer.
+- Describe the NIH reference lookup and how plain-language follow-ups reuse evidence.
 - Explain structured planning with Pydantic and LLM responses.
 - Describe how retrieved evidence flows between components.
 - Include an architecture diagram in the final report.
@@ -36,8 +39,8 @@
 ## 5. Evaluation and Results (200 words)
 
 - Describe the testing methodology.
-- Present results from the 20 targeted safety checks.
-- Discuss the two successful live research workflows.
+- Report the 20 original safety checks as a prototype milestone.
+- Discuss the two original live research workflows and the later Helix validation for definitions, follow-ups, and API behavior.
 - Explain how unsupported citations and fabricated scientific claims were tested.
 - Describe the limitations of these results and what they do not establish.
 
@@ -46,7 +49,7 @@
 - Discuss reliability challenges in biomedical evidence retrieval.
 - Explain limitations of LLM-based claim verification.
 - Identify improvements to evidence ranking and evaluation coverage.
-- Describe the Streamlit frontend and further usability improvements.
+- Discuss local session storage, the lack of in-flight request cancellation, and possible improvements to evidence browsing.
 - Discuss future human-in-the-loop evaluation.
 
 ## 7. Conclusion (100 words)
@@ -59,6 +62,7 @@
 
 - NCBI Gene
 - PubMed / NCBI E-utilities
+- NHGRI Talking Glossary, NCI Dictionaries, and MedlinePlus
 - Relevant ADPKD research publications
 - MCP documentation
 - Any external technical resources referenced in the report
